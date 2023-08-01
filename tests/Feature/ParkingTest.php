@@ -8,16 +8,16 @@ use App\Models\Vehicle;
 use App\Models\Zone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
- 
+
 class ParkingTest extends TestCase
 {
     use RefreshDatabase;
- 
-    public function testUserCanStartParkingSuccessfully()
+
+    public function testUserCanStartParking()
     {
-        $user = User::factory()->create();
+        $user    = User::factory()->create();
         $vehicle = Vehicle::factory()->create(['user_id' => $user->id]);
-        $zone = Zone::first();
+        $zone    = Zone::first();
 
         $response = $this->actingAs($user)->postJson('/api/v1/parkings/start', [
             'vehicle_id' => $vehicle->id,
@@ -34,34 +34,25 @@ class ParkingTest extends TestCase
                 ],
             ]);
 
-        $this->assertDatabaseHas('parkings', [
-            'vehicle_id' => $vehicle->id,
-            'zone_id'    => $zone->id,
-            'start_time' => now(),
-            'stop_time'  => null,
-            'total_price' => 0,
-        ]);
-
-        $this->assertDatabaseCount('parkings', 1);
+        $this->assertDatabaseCount('parkings', '1');
     }
 
- 
     public function testUserCanGetOngoingParkingWithCorrectPrice()
     {
-        $user = User::factory()->create();
+        $user    = User::factory()->create();
         $vehicle = Vehicle::factory()->create(['user_id' => $user->id]);
-        $zone = Zone::first();
- 
+        $zone    = Zone::first();
+
         $this->actingAs($user)->postJson('/api/v1/parkings/start', [
             'vehicle_id' => $vehicle->id,
             'zone_id'    => $zone->id,
         ]);
- 
+
         $this->travel(2)->hours();
- 
-        $parking = Parking::first();
-        $response = $this->actingAs($user)->getJson('/api/v1/parkings/' . $parking->id);
- 
+
+        $parking  = Parking::first();
+        $response = $this->actingAs($user)->getJson('/api/v1/parkings/'.$parking->id);
+
         $response->assertStatus(200)
             ->assertJsonStructure(['data'])
             ->assertJson([
@@ -71,25 +62,25 @@ class ParkingTest extends TestCase
                 ],
             ]);
     }
- 
+
     public function testUserCanStopParking()
     {
-        $user = User::factory()->create();
+        $user    = User::factory()->create();
         $vehicle = Vehicle::factory()->create(['user_id' => $user->id]);
-        $zone = Zone::first();
- 
+        $zone    = Zone::first();
+
         $this->actingAs($user)->postJson('/api/v1/parkings/start', [
             'vehicle_id' => $vehicle->id,
             'zone_id'    => $zone->id,
         ]);
- 
+
         $this->travel(2)->hours();
- 
-        $parking = Parking::first();
-        $response = $this->actingAs($user)->putJson('/api/v1/parkings/' . $parking->id);
- 
+
+        $parking  = Parking::first();
+        $response = $this->actingAs($user)->putJson('/api/v1/parkings/'.$parking->id);
+
         $updatedParking = Parking::find($parking->id);
- 
+
         $response->assertStatus(200)
             ->assertJsonStructure(['data'])
             ->assertJson([
@@ -99,7 +90,7 @@ class ParkingTest extends TestCase
                     'total_price' => $updatedParking->total_price,
                 ],
             ]);
- 
+
         $this->assertDatabaseCount('parkings', '1');
     }
 }

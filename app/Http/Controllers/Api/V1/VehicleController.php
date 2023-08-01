@@ -36,8 +36,14 @@ class VehicleController extends Controller
  
     public function destroy(Vehicle $vehicle)
     {
+        if ($vehicle->hasActiveParkings()) {
+            return response()->json([
+                'errors' => ['general' => ['Can\'t remove vehicle with active parkings. Stop active parking.']],
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         $vehicle->delete();
- 
-        return response()->json(['message' => 'Vehicle deleted']);
+
+        return response()->noContent();
     }
 }
