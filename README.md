@@ -30,7 +30,8 @@ Antes de começarmos a desenvolver a aplicação, vamos definir as entidades pri
 O projeto tem testes para ser rodados para testar as funcionalidades do sistema, basta rodar o comando "php artisan test".
 ## Referências da APP
 
-O APP desse projeto se encontra neste link: https://github.com/yurineves92/car-parking-app
+O APP desse projeto se encontra neste link: https://github.com/yurineves92/car-parking-app (Versão React)
+O APP desse projeto se encontra neste link: https://github.com/yurineves92/car-parking-app-vue3 (Versão Vue 3)
 
 ## Tecnologias e Conceitos
 
